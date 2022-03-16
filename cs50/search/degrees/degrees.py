@@ -1,6 +1,8 @@
 import csv
 import sys
 
+from sklearn import neighbors
+
 from util import Node, StackFrontier, QueueFrontier
 
 # Maps names to a set of corresponding person_ids
@@ -84,6 +86,8 @@ def main():
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
 
+
+
 def shortest_path(source, target):
     """
     Returns the shortest list of (movie_id, person_id) pairs
@@ -91,8 +95,46 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    counter = 0
 
-    # TODO
+    frontier = QueueFrontier()
+
+    source = Node(["place holder", source], None)
+    # target = ["place holder", target]
+
+    frontier.add(source)
+
+    while frontier.empty() == False:
+        # take one element from the frontier
+        current_object = frontier.remove()
+
+        #check if the current_object is the target
+        print("Current Objects id : ", current_object.get_state_person_id())
+        print("Target id : ", target)
+        if current_object.get_state_person_id() == target:
+            temp_parent = current_object
+            path = []
+            while temp_parent.get_parent() != None:
+                path.append(temp_parent.get_state())
+                temp_parent = temp_parent.get_parent()
+            return path        
+
+        # add all the neighbors of the current_object to the frontier
+        neighbors_of_person = neighbors_for_person(current_object.get_state_person_id())
+        for neighbor in neighbors_of_person:
+            temp_node = Node(neighbor, current_object)
+            frontier.add(temp_node)
+            counter +=1
+
+        # 
+
+    return None
+
+
+
+    
+
+
     raise NotImplementedError
 
 
@@ -133,6 +175,12 @@ def neighbors_for_person(person_id):
         for person_id in movies[movie_id]["stars"]:
             neighbors.add((movie_id, person_id))
     return neighbors
+
+
+def movie_of_person(person_id):
+    movie_ids = people[person_id]["movies"]
+    movie = movies[movie_ids[1]]
+    return movie
 
 
 if __name__ == "__main__":
