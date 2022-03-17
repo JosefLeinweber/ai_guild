@@ -95,38 +95,50 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-    counter = 0
+    # For keeping track which states were already visited
+    visited_states =[]
 
+    # Breadth first search 
     frontier = QueueFrontier()
 
-    source = Node(["place holder", source], None)
-    # target = ["place holder", target]
+    # Creating a Node from the source name
+    source = Node((1, source), None)
 
+    # Adding the source as first element to the frontier
     frontier.add(source)
 
+    # While there are nodes in the frontier
     while frontier.empty() == False:
+
         # take one element from the frontier
-        current_object = frontier.remove()
+        current_node = frontier.remove()
 
-        #check if the current_object is the target
-        print("Current Objects id : ", current_object.get_state_person_id())
-        print("Target id : ", target)
-        if current_object.get_state_person_id() == target:
-            temp_parent = current_object
-            path = []
-            while temp_parent.get_parent() != None:
-                path.append(temp_parent.get_state())
-                temp_parent = temp_parent.get_parent()
-            return path        
+        # check if node.state holds target id
+        if current_node.get_state()[1] == target:
+            print("Found path")
+            # backwards pathrecording
 
-        # add all the neighbors of the current_object to the frontier
-        neighbors_of_person = neighbors_for_person(current_object.get_state_person_id())
-        for neighbor in neighbors_of_person:
-            temp_node = Node(neighbor, current_object)
-            frontier.add(temp_node)
-            counter +=1
+            return True
 
-        # 
+        # If current node.state does not hold target id
+        # Add all the neighbors of the current node.state id to the frontier
+
+        # Get neighbors of current id
+
+        neighbors = neighbors_for_person(current_node.get_state()[1])
+
+        for neighbor in neighbors:
+
+            # Check if the state is already in the frontier or if the state was already visited
+            if frontier.contains_state(current_node.get_state()) == False and neighbor not in visited_states:
+                frontier.add(neighbor)
+                
+        
+        # Adding the current_node to the visited states
+        visited_states.append(current_node.get_state())
+
+
+
 
     return None
 
