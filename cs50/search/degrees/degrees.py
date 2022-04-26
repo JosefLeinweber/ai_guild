@@ -87,7 +87,6 @@ def main():
 
 
 
-
 def shortest_path(source, target):
     """
     Returns the shortest list of (movie_id, person_id) pairs
@@ -96,59 +95,60 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
     # For keeping track which states were already visited
-    visited_states =[]
+    
+    explored = set()
+    num_of_added_childs = 0
 
     # Breadth first search 
     frontier = QueueFrontier()
 
-    # Creating a Node from the source name
-    source = Node((1, source), None)
+    start = Node(state=source, parent=None, action=None)
 
-    # Adding the source as first element to the frontier
-    frontier.add(source)
+    frontier.add(start)
+
+
 
     # While there are nodes in the frontier
-    while frontier.empty() == False:
+    while True:
+        
+        if frontier.empty():
+                            
+            return None
 
-        # take one element from the frontier
+
+        # Take one element from the frontier
         current_node = frontier.remove()
+        print("Exploring Node with state : ", current_node.state)
 
-        # check if node.state holds target id
-        if current_node.get_state()[1] == target:
-            print("Found path")
+        # check if node.state is equal to the target 
+        if current_node.state == target:
+            print(f"Found path \n All together {num_of_added_childs}")
             # backwards pathrecording
+            path = []
+            while current_node.parent != None:
+                path.append((current_node.action, current_node.state))
+                current_node = current_node.parent
 
-            return True
+            path.reverse()
+            return path
 
-        # If current node.state does not hold target id
-        # Add all the neighbors of the current node.state id to the frontier
+        # Add node to explored nodes
+        explored.add(current_node.state)
+        # num_explored += 1
 
         # Get neighbors of current id
 
-        neighbors = neighbors_for_person(current_node.get_state()[1])
-
-        for neighbor in neighbors:
+        neighbors = neighbors_for_person(current_node.state)
+        # (movie, star)
+        for movie, star in neighbors:
 
             # Check if the state is already in the frontier or if the state was already visited
-            if frontier.contains_state(current_node.get_state()) == False and neighbor not in visited_states:
-                frontier.add(neighbor)
-                
-        
-        # Adding the current_node to the visited states
-        visited_states.append(current_node.get_state())
+            if frontier.contains_state(star) == False and star not in explored:
 
-
-
-
-    return None
-
-
-
-    
-
-
-    raise NotImplementedError
-
+                # Creating a Node from the one neighbor as "state" and the current node's state as "parent"
+                child = Node(state = star, parent=current_node, action = movie)
+                num_of_added_childs += 1
+                frontier.add(child)
 
 def person_id_for_name(name):
     """

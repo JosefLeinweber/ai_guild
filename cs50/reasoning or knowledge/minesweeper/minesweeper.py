@@ -131,7 +131,7 @@ class Sentence():
         """
         if cell in self.cells:
             self.cells.remove(cell)
-            
+
 
 
 class MinesweeperAI():
@@ -188,7 +188,14 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        raise NotImplementedError
+
+        #1
+        self.moves_made.add(cell)
+
+        #2
+        self.mark_safe(cell)
+
+
 
     def make_safe_move(self):
         """
@@ -209,3 +216,6 @@ class MinesweeperAI():
             2) are not known to be mines
         """
         raise NotImplementedError
+
+    def get_neighbohrs(cell, count):
+        
