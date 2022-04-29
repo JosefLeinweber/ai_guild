@@ -1,7 +1,7 @@
 import sys
 
-from crossword import *
-
+from src.crossword import Crossword
+from src.crossword import Variable
 
 class CrosswordCreator():
 
@@ -99,18 +99,28 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
+        
         # Iterate over all the keys of the dic, which are variables
         for variable in self.domains:
-
+            print(f"for variable {variable}")
+            domain_values_to_remove = []
             # Iterate over all the values the dict holdes for the variable
+            # => the domain of the variable
             for domain_value in self.domains[variable]:
 
                 # If the length of the value is not equal to the variables length.
                 # it does not satify the unary constraints!
-                if len(domain_value) == variable.length:
+                if len(domain_value) != variable.length:
                     
                     # Remove the value from the variables domain
-                    self.domains[variable].remove(domain_value)
+                    domain_values_to_remove.append(domain_value)
+
+                if len(domain_value) == variable.length:
+                    print(len(domain_value),variable.length)
+
+            for value in domain_values_to_remove:
+
+                self.domains[variable].remove(value)
 
     def revise(self, x, y):
         """
@@ -127,24 +137,43 @@ class CrosswordCreator():
         overlap = self.crossword.overlaps.get((x, y))
 
         # If there is an overlap between the two variables
-        if overlap is not None:
+        if overlap != None:
+            # Create a list which will hold the domain values that need to removed
+            domain_values_to_remvoe = []
 
             # Loop through the whole domain of x
             for domain_value_of_x in self.domains[x]:
+                # Create a list which will keep track of the values  of y which satisfy the binary constraints
+                # for this specific domain value of x
+                arc_consistent_values = []
 
                 # For each domain value of x, loop through the whole domain of y
                 for domain_value_of_y in self.domains[y]:
                     
                     # Check if the current domain values of x and y have the same value at the overlap
-                    # If that is not the case they do not satisfy the binary constraints
-                    if domain_value_of_x[overlap[0]] != domain_value_of_y[overlap[1]]:
+                    # If that is the case the current domain values of x and y satisfy the binary constraints
+                    if domain_value_of_x[overlap[0]] == domain_value_of_y[overlap[1]]:
 
-                        # Delete the domain value, since it does not satisfy the binary constraints
-                        self.domains[x].remove(domain_value_of_x)
+                        # Add the domain value of y to the list of values which satisfy the b.c. for 
+                        # the current domain value
+                        arc_consistent_values.append(domain_value_of_y)
+                
+                # If there are no values which satisfy the b.c. for the current domain value of x
+                # the current domain value of x will need to be deleted
+                if arc_consistent_values == []:
+                    ###print(f"The domain value : {domain_value_of_x} will need to be deleted")
+                    domain_values_to_remvoe.append(domain_value_of_x)
+                    # Since changes will be made to the domain of x revised will be set to True
+                    revised = True
 
-                        # Set revised to True since changes where made
-                        revised = True
-        
+            # Outside of the for loop of the domain values of x 
+            # remove the values of the domain of x which have no domain value of y that satisfys the b.c.
+            for value in domain_values_to_remvoe:
+                self.domains[x].remove(value)
+
+            print("Lenth of the domain ",len(self.domains[x]))
+            print(revised)
+
         return revised
     
     def ac3(self, arcs=None):
@@ -168,10 +197,13 @@ class CrosswordCreator():
 
                     if self.crossword.overlaps.get((x, y)) != None:
                         arcs.append((x, y))
+            
+            print(f"--------The inital size of the queue is {len(arcs)}")
+
 
         # While there are still arcs in the queue
-        while arcs is not []:
-
+        while len(arcs) != 0:
+            print(f"--------The current size of the queue is : {len(arcs)}")
             # Get one arc
             current_arc = arcs.pop(0)
 
@@ -213,6 +245,10 @@ class CrosswordCreator():
             # => if it is smaller than 2 it is not a word
             if len(assignment[variable]) < 2:
                 return False
+        print(f"The length of the assignment is: {len(assignment)}")
+        print("The final words are: ")
+        for variable in assignment:
+            print(assignment[variable])
 
         # If all the values of the assignment diconary are words the assignment is complete
         return True
@@ -222,11 +258,39 @@ class CrosswordCreator():
         Return True if `assignment` is consistent (i.e., words fit in crossword
         puzzle without conflicting characters); return False otherwise.
         """
-        
+
+        # Looping through all the variables
         for x in assignment:
+            value = assignment[x]
+            # Checking if the value of the variable has the correct length
+            if len(value) != x.length and len(value) != 0:
+                print(f"In consisten \n{len(assignment[x])} is not equal to the variables length {x.length}")
+                return False
+
+            
             for y in assignment:
-                if self.crossword.overlaps.get((x, y)) is not None:
-                    
+
+                # Check if the variable values are distinct
+                if y != x and len(assignment[x]) != 0 and len(assignment[y]) != 0:   
+
+                    if assignment[x] == assignment[y]:
+                        print(f"In consistent \n x has the same value : {assignment[x]} as y : {assignment[y]}")
+                        return False
+
+                    # Check if there is a overlap conflict between x and y
+                    overlap = self.crossword.overlaps.get((x, y))
+                    if overlap != None:
+                        domain_value_of_x = assignment[x]
+                        domain_value_of_y = assignment[y]
+
+                        # If the domain values of x and y do not have the same value at the overlap
+                        # the assignment is not consistent
+                        if domain_value_of_x[overlap[0]] != domain_value_of_y[overlap[1]]:
+                            return False
+
+
+        return True
+             
 
     def order_domain_values(self, var, assignment):
         """
@@ -235,7 +299,8 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        raise NotImplementedError
+        #! Not implemented correctly
+        return self.domains[var]
 
     def select_unassigned_variable(self, assignment):
         """
@@ -245,7 +310,13 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        raise NotImplementedError
+        #! Not implemented correctly
+
+        for variable in assignment:
+
+            if len(assignment[variable]) < 2:
+                return variable
+
 
     def backtrack(self, assignment):
         """
@@ -256,7 +327,49 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        print("------------------------------ BACKTRACK CALLED")
+
+        if len(assignment) == 0:
+            for variable in self.domains:
+                assignment[variable] = ""
+                print(len(assignment))
+        
+        # Check if the assignment is complete
+        if self.assignment_complete(assignment) and len(assignment) != 0:
+            return assignment
+
+        # Get a unassigned variable
+        variable = self.select_unassigned_variable(assignment)
+
+        # Get all the domain values of the unassigned variable
+        domain_values_of_variable = self.order_domain_values(variable, assignment)
+
+        # Check if the assignment would be consistent with the a domain_value of the variable
+        for domain_value in domain_values_of_variable:
+            
+            #? since I still dont know what value a variable without a assigned value has (key, value)
+            temp = assignment[variable]
+            
+            # assigne the domain value to the variable
+            assignment[variable] = domain_value
+
+            # check if the assignment is consistent with this specific domain_value for the variable
+            print(self.consistent(assignment))
+            if self.consistent(assignment):
+                # Call backtrack again
+                result = self.backtrack(assignment)
+
+                # If the result is not None, the assignment could be completed
+                if result != None:
+                    return result
+
+            # Set the variables value back to what is was befor
+            assignment[variable] = temp
+
+        return None
+
+
+
 
 
 def main():
