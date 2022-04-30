@@ -102,7 +102,6 @@ class CrosswordCreator():
         
         # Iterate over all the keys of the dic, which are variables
         for variable in self.domains:
-            print(f"for variable {variable}")
             domain_values_to_remove = []
             # Iterate over all the values the dict holdes for the variable
             # => the domain of the variable
@@ -114,9 +113,6 @@ class CrosswordCreator():
                     
                     # Remove the value from the variables domain
                     domain_values_to_remove.append(domain_value)
-
-                if len(domain_value) == variable.length:
-                    print(len(domain_value),variable.length)
 
             for value in domain_values_to_remove:
 
@@ -161,7 +157,6 @@ class CrosswordCreator():
                 # If there are no values which satisfy the b.c. for the current domain value of x
                 # the current domain value of x will need to be deleted
                 if arc_consistent_values == []:
-                    ###print(f"The domain value : {domain_value_of_x} will need to be deleted")
                     domain_values_to_remvoe.append(domain_value_of_x)
                     # Since changes will be made to the domain of x revised will be set to True
                     revised = True
@@ -171,8 +166,6 @@ class CrosswordCreator():
             for value in domain_values_to_remvoe:
                 self.domains[x].remove(value)
 
-            print("Lenth of the domain ",len(self.domains[x]))
-            print(revised)
 
         return revised
     
@@ -245,11 +238,7 @@ class CrosswordCreator():
             # => if it is smaller than 2 it is not a word
             if len(assignment[variable]) < 2:
                 return False
-        print(f"The length of the assignment is: {len(assignment)}")
-        print("The final words are: ")
-        for variable in assignment:
-            print(assignment[variable])
-
+                
         # If all the values of the assignment diconary are words the assignment is complete
         return True
 
@@ -264,7 +253,6 @@ class CrosswordCreator():
             value = assignment[x]
             # Checking if the value of the variable has the correct length
             if len(value) != x.length and len(value) != 0:
-                print(f"In consisten \n{len(assignment[x])} is not equal to the variables length {x.length}")
                 return False
 
             
@@ -274,7 +262,6 @@ class CrosswordCreator():
                 if y != x and len(assignment[x]) != 0 and len(assignment[y]) != 0:   
 
                     if assignment[x] == assignment[y]:
-                        print(f"In consistent \n x has the same value : {assignment[x]} as y : {assignment[y]}")
                         return False
 
                     # Check if there is a overlap conflict between x and y
@@ -327,12 +314,11 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        print("------------------------------ BACKTRACK CALLED")
+        print("--------BACKTRACK CALLED")
 
         if len(assignment) == 0:
             for variable in self.domains:
                 assignment[variable] = ""
-                print(len(assignment))
         
         # Check if the assignment is complete
         if self.assignment_complete(assignment) and len(assignment) != 0:
@@ -354,7 +340,6 @@ class CrosswordCreator():
             assignment[variable] = domain_value
 
             # check if the assignment is consistent with this specific domain_value for the variable
-            print(self.consistent(assignment))
             if self.consistent(assignment):
                 # Call backtrack again
                 result = self.backtrack(assignment)
