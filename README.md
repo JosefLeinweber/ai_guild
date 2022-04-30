@@ -4,7 +4,7 @@
 This repository has four folders, each corresponding to one area of AI (learning, optimization, reasoning and search). 
 Each of those folders, holds one or two projects, in which methods of the related field of AI are used to solve a problem.
 
-The assignments for the projects is taken from the course https://cs50.harvard.edu/ai/2020/.
+The assignments for the projects is taken from the course https://cs50.harvard.edu/ai/2020/. Each of the projects had an uncompleted code base. The task was to those, to make the projects run.
 
 ##  Overview of projects:
 ### Learning:
@@ -20,9 +20,14 @@ The assignments for the projects is taken from the course https://cs50.harvard.e
   - Degrees
   - TicTacToe
   
-## Getting Started:
-
-### Dependencies
+## Dependencies
 Install requirements.txt with:
 
 `pip3 install -r requirements.txt`
+
+
+## Documentation of projects
+
+### Nim
+** 
+  
