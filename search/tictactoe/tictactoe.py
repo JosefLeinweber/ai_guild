@@ -4,8 +4,6 @@ Tic Tac Toe Player
 
 from copy import deepcopy
 import math
-import numpy as np
-from msilib.schema import Error
 
 
 X = "X"
@@ -43,7 +41,7 @@ def player(board):
         return X
 
     else:
-        return X
+        return O
 
 
 def actions(board):
@@ -55,7 +53,7 @@ def actions(board):
     for row in range(len(board)):
         for column in range(len(board[0])):
 
-            if board[row][column] == None:
+            if board[row][column] == EMPTY:
                 possible_actions.add((row, column))
 
     return possible_actions
@@ -89,12 +87,6 @@ def result(board, action):
     
     deep_copy_of_board[action[0]][action[1]] = current_player
 
-    print("\nafter taking a trun\n")
-    print("Action : ", action)
-    print(" inital Board : \n", board)
-    print("result board: \n", deep_copy_of_board)
-
-
     return deep_copy_of_board
 
 def evaluate_diagonals(board):
@@ -106,6 +98,24 @@ def evaluate_diagonals(board):
 
     return None
 
+def evaluating_horizontals(board):
+    for row_index in range(len(board)):
+        if board[row_index][0] != EMPTY and same_field_values(board[row_index]):
+            return (row_index, 0)
+
+    return None
+
+def evaluating_verticals(board):
+    for column_index in range(len(board)):
+        colum_values = []
+        for row_index in range(len(board)):
+            colum_values.append(board[row_index][column_index])
+
+        if board[0][column_index] != EMPTY and same_field_values(colum_values):
+            return (0, column_index)
+
+    return None
+
 def get_winner(board, coordinates):
     winner = board[coordinates[0]][coordinates[1]]
     return winner
@@ -113,40 +123,33 @@ def get_winner(board, coordinates):
 def same_field_values(array):
     return all(x == array[0] for x in array)
 
-def evaluating_horizontals(board):
-    for row_index in range(len(board)):
-        row_values = []
-        for column_index in range(len(board)):
-            row_values.append(board[row_index][column_index])
-
-        if row_values[0] != EMPTY and same_field_values(row_values):
-            return (row_index, column_index)
-
-    return None
-
-
 def get_winner_coordinates(board):
     coordinates = ()
 
     # Evaluating horizontals
-    if evaluating_horizontals != None:
+    if evaluating_horizontals(board) != None:
         coordinates = evaluating_horizontals(board)
 
-        
-
-
     # Evaluating verticals
+    if evaluating_verticals(board) != None:
+        coordinates = evaluating_verticals(board)
 
     # Evaluating diagonals
+    if evaluate_diagonals(board) != None:
+        coordinates = evaluate_diagonals(board)
 
-
-    return coordinates
+    return coordinates if len(coordinates) != 0 else None
 
 def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
     winner = None
+    winner_coordinates = get_winner_coordinates(board)
+    if winner_coordinates != None:
+        winner = get_winner(board, winner_coordinates)
+
+    return winner
     
     
     
@@ -159,23 +162,25 @@ def terminal(board):
 
     game_is_over = False
 
-    # If there is a winner the game is over
+    # If winner != None, there is a winner and the game is over
     if winner(board) != None:
 
         game_is_over = True
         return game_is_over
 
-    # Else if there is no winner check if there are no more empty fields
-    # in the board
+    # If there is no winner, the game has either ended in a tie or is still 
+    # in progress
     else:
 
-        empty_fields_in_board = any(None in row for row in board)
+        # Check if there are empty fields in the board
+        empty_fields_in_board = any(EMPTY in row for row in board)
 
+        # If there are no empty fields the game has ended in a tie
         if not empty_fields_in_board:
-
             game_is_over = True
             return game_is_over
 
+        # If there are empty fields left in the board, the game is not over
         else:
 
             return game_is_over
@@ -184,20 +189,21 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    if terminal(board):
-        winner_of_game = winner(board)
 
-        if winner_of_game == X:
-            return 1
+    # We assume that utility will only be called on a terminal board
+    winner_of_game = winner(board)
 
-        elif winner_of_game == O:
-            return -1
-        
-        elif winner_of_game == None:
-            return 0
+    if winner_of_game == X:
+        return 1
 
-        else:
-            raise ValueError
+    elif winner_of_game == O:
+        return -1
+    
+    elif winner_of_game == None:
+        return 0
+
+    else:
+        raise ValueError
 
 
 
@@ -234,9 +240,6 @@ def max_value(board):
     
     return v
 
-
-
-
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
@@ -245,17 +248,22 @@ def minimax(board):
     if terminal(board):
         return None
 
-    values_of_action = []
+    values_of_actions =  {}
 
-    for action in actions(board):
+    if player(board) == X:
+        for action in actions(board):
+            temp = min_value(result(board, action))
+            values_of_actions[action] = temp
+            values_of_actions = dict(sorted(values_of_actions.items(), key=lambda item: item[1]))
+    else:
+        for action in actions(board):
+            temp = max_value(result(board, action))
+            values_of_actions[action] = temp
+            values_of_actions = dict(sorted(values_of_actions.items(), key=lambda item: item[1], reverse=True))
 
-        value = max_value(result(board, action))
-
-        values_of_action.append((value, action))
-
-    values_of_action.sort()
-
-    return values_of_action[-1][1]
+    keys_of_dict = list(values_of_actions.keys())
+    best_move = keys_of_dict[-1]
+    return best_move
 
 
 
