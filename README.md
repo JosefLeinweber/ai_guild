@@ -21,6 +21,7 @@ The assignments for the projects is taken from the course https://cs50.harvard.e
   - TicTacToe
   
 ## Dependencies
+
 Install requirements.txt with:
 
 `pip3 install -r requirements.txt`
@@ -33,10 +34,12 @@ Install requirements.txt with:
 ### Nim
 
 **How to run:**
+
 1. Set x in  play.py (`ai = train(x)`) to the amount of games the AI should play befor facing you
 2. Run the game with `python play.py` and follow the instruction in the terminal
 
 **Functions which implementation needed to be completed:**
+
 - get_q_value
 - update_q_value
 - best_future_reward
@@ -45,6 +48,7 @@ Install requirements.txt with:
 ### Crossword
 
 **How to run:**
+
 Run `python generate.py data/structure0.txt data/words0.txt name_of_img.png`
 - Change the crossword layout by changing `data/structure0.txt` to `data/structure1.txt` or `data/structure2.txt`
 - Change the set of words by changing `data/words0.txt` to `data/words1.txt` or `data/words2.txt`
@@ -68,26 +72,31 @@ Run `python puzzle.py`
 
 
 **Functions which implementation needed to be completed:**
+
 *No functions needed to be implemented for this project, only the sentences for each puzzle and the general information over the rules of the game*
 
 ### Degrees
 
 **How to run:**
+
 1. Run `python degrees.py` or `python degrees_optimized.py` (if you dont want to wait that long)
 2. Copy and past each time a different name from large/people.csv, when the terminal asks for a name
 
 
 **Functions which implementation needed to be completed:**
+
 - shortest_path
 
 ### Tic-tac-toe
 
 **How to run:**
+
 1. Run `python runner.py`
 2. Follow the instructions of the window which will open
 
 
 **Functions which implementation needed to be completed:**
+
 - player
 - actions
 - result
