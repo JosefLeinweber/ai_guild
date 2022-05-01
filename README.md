@@ -27,11 +27,11 @@ Install requirements.txt with:
 `pip3 install -r requirements.txt`
 
 
-## Documentation of the projects
+# Documentation of the projects
 
 **Make sure you installed the dependencies**
 
-### Nim
+## Nim
 
 **How to run:**
 
@@ -45,7 +45,7 @@ Install requirements.txt with:
 - best_future_reward
 - choose_action
 
-### Crossword
+## Crossword
 
 **How to run:**
 
@@ -65,7 +65,7 @@ Run `python generate.py data/structure0.txt data/words0.txt name_of_img.png`
 - select_unassinged_variable
 - backtrack
 
-### Knights and Knaves
+## Knights and Knaves
 
 **How to run:**
 Run `python puzzle.py`
@@ -75,7 +75,7 @@ Run `python puzzle.py`
 
 *No functions needed to be implemented for this project, only the sentences for each puzzle and the general information over the rules of the game*
 
-### Degrees
+## Degrees
 
 **How to run:**
 
@@ -87,7 +87,7 @@ Run `python puzzle.py`
 
 - shortest_path
 
-### Tic-tac-toe
+## Tic-tac-toe
 
 **How to run:**
 
