@@ -11,14 +11,6 @@ CKnight = Symbol("C is a Knight")
 CKnave = Symbol("C is a Knave")
 
 
-# General knowledge
-general_knowledge = And(
-
-    Or(BKnave, BKnight),
-    Not(And(BKnave, BKnight)),
-    Or(CKnave, CKnight),
-    Not(And(CKnave, CKnight))
-)
 
 # Puzzle 0
 # A says "I am both a knight and a knave."

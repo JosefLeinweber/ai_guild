@@ -118,11 +118,10 @@ def shortest_path(source, target):
 
         # Take one element from the frontier
         current_node = frontier.remove()
-        print("Exploring Node with state : ", current_node.state)
 
         # check if node.state is equal to the target 
         if current_node.state == target:
-            print(f"Found path \n All together {num_of_added_childs}")
+            print(f"Overall childs added{num_of_added_childs}")
             # backwards pathrecording
             path = []
             while current_node.parent != None:

@@ -112,8 +112,6 @@ def shortest_path(source, target):
 
         node = frontier.remove()
 
-        print(f"exploring {node.state}")
-
         num_explored += 1
 
         explored.add(node.state)
